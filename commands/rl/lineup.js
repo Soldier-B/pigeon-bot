@@ -20,7 +20,7 @@ module.exports = {
 			lineup.splice(i, 1);
 		}
 		// sort names
-		lineup.sort();
+		lineup.sort((a, b) => a.toLowerCase().localeCompare(b.toLowerCase()));
 		// spit out lineup
 		await interaction.reply(`The roster is ${lineup[0]}, ${lineup[1]} and ${lineup[2]}.`);
 	}
