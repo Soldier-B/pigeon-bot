@@ -9,7 +9,7 @@ module.exports = {
 		// read file to see who's turn it is to lead
 		const id = fs.readFileSync('./leader.txt', 'utf-8');
 		// get current member data
-		const member = await interaction.guild.members.fetch(data.toString());
+		const member = await interaction.guild.members.fetch(id);
 		// reply
 		await interaction.reply(`The next leader is **${member.nickname ?? member.user.globalName}**.`);
 	}
