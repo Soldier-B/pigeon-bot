@@ -1,4 +1,4 @@
-const fs = require('node:fs');
+const db = require('../../db');
 const { SlashCommandBuilder } = require('discord.js');
 const { froggyyId } = require('../../config.json');
 const { soldierId } = require('../../config.json');
@@ -15,14 +15,14 @@ module.exports = {
 		}
 
 		// read file to see who's turn it is to lead
-		const buffer = fs.readFileSync('./leader.txt', 'utf-8');
+		const leader = await db.getLeader();
 
 		// check to make sure user is current leader
-		if (interaction.user.id === buffer) {
+		if (interaction.user.id === leader) {
 			const next = [froggyyId, soldierId].filter(id => id !== interaction.user.id)[0];
 			const member = await interaction.guild.members.fetch(next);
 			// update leader file
-			fs.writeFileSync('./leader.txt', next);
+			await db.setLeader(next);
 			// reply
 			await interaction.reply(`**${member.nickname ?? member.user.globalName}** has been set as the next leader.`);
 		}
