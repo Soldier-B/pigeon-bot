@@ -1,9 +1,11 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const { Client, Events, GatewayIntentBits, Collection } = require('discord.js');
-const { token } = require('./config.json');
+const { token, soldierId, botTestingId } = require('./config.json');
 
-const client = new Client({ intents: [GatewayIntentBits.Guilds] });
+global.dt = false;
+
+const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
 
 client.commands = new Collection();
 
@@ -31,6 +33,13 @@ for (const folder of commandFolders) {
 
 client.once(Events.ClientReady, readyClient => {
 	console.log(`Ready! Logged in as ${readyClient.user.tag}`);
+});
+
+client.on(Events.MessageCreate, async message => {
+	if (message.channel.id !== botTestingId) return;
+	if (message.author.id !== soldierId) return;
+	if (!/\x64\x72\x65\x61\x6d\x74\x65\x61\x6d/i.test(message.content)) return;
+	global.dt = true;
 });
 
 client.on(Events.InteractionCreate, async interaction => {
