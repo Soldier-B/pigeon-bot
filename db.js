@@ -1,5 +1,5 @@
 const { dbconn } = require('./config.json');
-const mariadb = require('mariadb');
+const sqlite = require('node:sqlite');
 
 async function getLeader() {
 	const leader = (await executeQuery('SELECT * FROM leader LIMIT 1'))[0].value;
@@ -16,22 +16,18 @@ async function getFacts() {
 }
 
 async function executeQuery(query) {
-	const pool = mariadb.createPool(dbconn);
-	let conn, rows;
+	const db = new sqlite.DatabaseSync('./data/pigeon-bot.db');
 
 	try {
-		conn = await pool.getConnection(dbconn);
-		rows = await conn.query(query);
+		const stmt = db.prepare(query);
+		return stmt.all();
 	}
 	catch (err) {
 		throw err;
 	}
 	finally {
-		if (conn) conn.end();
-		if (pool) pool.end();
+		if (db && db.isOpen) db.close();
 	}
-
-	return rows;
 }
 
 module.exports = { getLeader, setLeader, getFacts };
